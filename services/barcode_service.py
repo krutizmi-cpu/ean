@@ -54,7 +54,7 @@ def generate_internal_ean13(article: str, sequence: int, prefix: str = "20") -> 
 def ensure_ean13(
     article: str,
     ean13: Optional[str],
-    sequence: int,
+    sequence: int = 1,
     prefix: str = "20",
 ) -> tuple[str, bool]:
     cleaned = normalize_digits(ean13)
