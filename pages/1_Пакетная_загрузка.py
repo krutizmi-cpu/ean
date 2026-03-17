@@ -8,10 +8,15 @@ from services.barcode_service import ensure_ean13
 from services.excel_service import build_template_xlsx, read_uploaded_excel, result_to_xlsx
 from services.label_service import generate_labels_pdf
 
-st.set_page_config(page_title="Пакетная загрузка", page_icon="📄", layout="wide")
 st.title("📄 Пакетная загрузка")
 
-template_bytes = build_template_xlsx()
+
+@st.cache_data
+def get_template():
+    return build_template_xlsx()
+
+
+template_bytes = get_template()
 st.download_button(
     "Скачать шаблон Excel",
     data=template_bytes,
