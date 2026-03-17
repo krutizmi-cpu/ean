@@ -24,21 +24,20 @@ if submitted:
     if not article or not name:
         st.error("Артикул и Наименование обязательны")
     else:
-        ean13 = ensure_ean13(ean13, article)
+        final_ean13, _ = ensure_ean13(article=article, ean13=ean13)
         add_product({
-            "артикул": article,
-            "наименование": name,
-            "шк": ean13,
-            "количество": int(qty),
+            "Артикул": article,
+            "Наименование": name,
+            "EAN13": final_ean13,
+            "Количество": int(qty),
         })
-        st.success(f"Добавлено: {name} ({ean13})")
+        st.success(f"Добавлено: {name} ({final_ean13})")
 
-products = list_products()
+products_df = list_products()
 
-if products:
-    st.subheader(f"Список товаров ({len(products)} шт.)")
-    import pandas as pd
-    st.dataframe(pd.DataFrame(products), use_container_width=True)
+if not products_df.empty:
+    st.subheader(f"Список товаров ({len(products_df)} шт.)")
+    st.dataframe(products_df, use_container_width=True)
 
     if st.button("🗑️ Очистить список"):
         clear_products()
@@ -46,10 +45,10 @@ if products:
 
     if st.button("🎯 Сформировать результат"):
         with st.spinner("Генерация..."):
-            result_xlsx = result_to_xlsx(products)
-            result_csv = build_result_csv(products)
-            pdf_56x40 = generate_labels_pdf(products, fmt="56x40")
-            pdf_a6 = generate_labels_pdf(products, fmt="a6")
+            result_xlsx = result_to_xlsx(products_df)
+            result_csv = build_result_csv(products_df)
+            pdf_56x40 = generate_labels_pdf(products_df, label_format="56x40")
+            pdf_a6 = generate_labels_pdf(products_df, label_format="A6")
             now_str = dt.datetime.now().strftime("%Y%m%d_%H%M")
             zip_bytes = build_zip_bundle(
                 result_xlsx=result_xlsx,
